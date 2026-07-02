@@ -1,0 +1,113 @@
+# 流量超额阻断器 | TrafficLimit
+<p align="center">
+  <a href="#-english-version">English</a> •
+  <a href="#-中文版本">中文</a>
+</p>
+
+
+## 中文版
+本项目基于原版<a href="https://github.com/vergoh/vnstat">vnstat</a>告警机制而开发，通过shell与定时任务以监控云服务器的流量以免超标而产生不必要的资费，感谢原作者的开源贡献！  
+这是我第一次写project，算是新手，如果有任何问题大概是无法解答的，可以问问信任的AI们  :)
+
+### 一、部署
+0. **安装`vnstat`**  
+```
+sudo apt install vnstat
+```
+1. **修改配置文件**  
+通过apt安装的vnstat配置文件位于`/etc/vnstat.conf`  
+利用nano命令对此文件进行修改，记得删除开头的`;`
+```bash
+# 1. 设置默认监控网卡（改为你通过 ip link命令查到的真实网卡名，如 eth0）
+Interface "eth0"
+
+# 2. 修改单位进制为SI，按 1000 进制计算，留余地）
+UnitMode 2
+
+# 3. 【可选】修改月流量结算起始日
+MonthRotate 1
+```
+  保存并退出，重启服务使配置生效
+```shell
+sudo systemctl restart vnstat
+```
+2. **创建断网时执行的脚本**  
+  选择一个目录（如/etc）下创建脚本文件，本教程中以`1.sh`为例  
+  也可以直接下载仓库中`A.sh`或`B.sh`
+```shell
+sudo nano /etc/1.sh
+```
+3. **编写脚本内容**  
+
+**A情况：禁用对应网卡实现断网（适用于服务器在你手边时）**  
+其中eth0是你通过`ip link`命令或`ifconfig`命令获取的目标网卡名  
+直接用`A.sh`  
+
+**B情况：通过`iptables`封锁所有流量，并保留22号SSH端口  
+（适用于云服务器纯白嫖需求）**  
+直接用`B.sh`  
+
+**C情况：个人自定义脚本**
+
+4. **赋予脚本可执行权限**
+```
+sudo chmod +x /etc/1.sh
+```
+5. **配置 vnstat 用户免密 sudo 权限**  
+```
+sudo visudo
+```
+在最后一行添加以下内容。  
+（注：如果你下载的是仓库脚本，请将 1.sh 替换为 A.sh 或 B.sh）
+```shell
+vnstat ALL=(ALL) NOPASSWD: /etc/1.sh
+```
+6. **设置自动执行**  
+打开当前用户的自动任务编辑器
+```shell
+crontab -e
+```
+在最后一行添加如下内容：
+```shell
+*/5 * * * * /etc/1.sh
+```
+
+### 二、检验  
+为防止因设置无效而导致流量超额，建议先设置小额并进行超额测试  
+在终端中按照顺序运行即可 
+```shell
+# 1. 临时声明你的网卡变量
+INTERFACE="eth0"
+# 2. 尝试运行单次检测（假设你的月流量已超过 1 KB）
+vnstat -i $INTERFACE --alert 0 3 month total 1 KB
+# 3. 如果上一条命令因为超额返回了错误码，则会触发以下打印和日志
+if [ $? -eq 1 ]; then
+    echo "$(date): 流量已超额" >> ~/alert.log
+    echo "流量已超额！测试成功！"
+fi
+```
+以本代码为例，在执行常规耗流任务如`sudo apt update`后，建议检查`/home/alert.log`中是否出现提示
+
+### 三、恢复  
+`B方案`断网后由于还剩22端口供ssh连接，在重置流量额度后通过远程ssh运行如下命令，以**清空防火墙规则**
+```bash
+# 1. 将防火墙默认策略改回允许
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
+
+# 2. 清空所有的限制规则
+sudo iptables -F
+```
+<p align="right">(<a href="#top">回到顶部</a>)</p>
+
+---
+
+##  English Version
+To be continued...
+
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+---

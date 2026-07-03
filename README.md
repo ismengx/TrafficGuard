@@ -6,8 +6,11 @@
 
 
 ## 中文版
-本项目基于原版<a href="https://github.com/vergoh/vnstat">vnstat</a>告警机制而开发，通过shell与定时任务以监控云服务器的流量以免超标而产生不必要的资费，感谢原作者的开源贡献！  
+本项目基于原版<a href="https://github.com/vergoh/vnstat">vnstat (2.9-1)</a>告警机制而开发，通过shell与定时任务以监控云服务器的流量以免超标而产生不必要的资费，感谢原作者的开源贡献！  
 这是我第一次写project，算是新手，如果有任何问题大概是无法解答的，可以问问信任的AI们  :)
+
+附上个人利用Gemini汉化的[vnstat用户手册](https://github.com/ismengx/TrafficLimiter/blob/main/CN%20Translated%20manual.md)  
+
 
 ### 一、部署
 0. **安装`vnstat`**  

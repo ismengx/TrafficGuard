@@ -1,4 +1,4 @@
-# 流量超额阻断器 | TrafficLimit
+# 流量超额阻断器 | TrafficGuard
 <p align="center">
   <a href="#-english-version">English</a> •
   <a href="#-中文版本">中文</a>
@@ -6,10 +6,10 @@
 
 
 ## 中文版
-本项目基于原版<a href="https://github.com/vergoh/vnstat">vnstat (2.9-1)</a>告警机制而开发，通过shell与定时任务以监控云服务器的流量以免超标而产生不必要的资费，感谢原作者的开源贡献！  
-这是我第一次写project，算是新手，如果有任何问题大概是无法解答的，可以问问信任的AI们  :)
-
-附上个人利用Gemini汉化的[vnstat用户手册](https://github.com/ismengx/TrafficLimiter/blob/main/CN%20Translated%20manual.md)  
+本项目基于原版<a href="https://github.com/vergoh/vnstat">vnstat (2.9-1)</a>alert机制而开发，通过sh脚本与定时任务以监控云服务器的流量以免产生不必要的资费，感谢原作者的开源贡献！  
+这是我第一次写project，大概算是个人自用及系统实践  : )  
+⚠️ 注意：本项目不具备实时流量控制能力，存在短时间超额风险。  
+附上个人汉化的[vnstat用户手册](https://github.com/ismengx/TrafficLimiter/blob/main/CN%20Translated%20manual.md)，也有Gemini的功劳。  
 
 
 ### 一、部署
@@ -27,7 +27,14 @@ Interface "eth0"
 # 2. 修改单位进制为SI，按 1000 进制计算，留余地）
 UnitMode 2
 
-# 3. 【可选】修改月流量结算起始日
+# 3. 守护进程刷新内存缓存的频率（单位：秒）
+UpdateInterval 10
+
+# 4. 内存数据强行刷入硬盘数据库的频率（单位：分钟）。
+# 默认是 5 分钟。为了保护硬盘/闪存，vnstat 默认不会每秒都写硬盘。
+# 调整 UpdateInterval 后，建议将此项也适当调小，例如改为 1 分钟。
+SaveInterval 1
+# 4. 【可选】修改月流量结算起始日
 MonthRotate 1
 ```
   保存并退出，重启服务使配置生效
@@ -63,7 +70,7 @@ sudo visudo
 在最后一行添加以下内容。  
 （注：如果你下载的是仓库脚本，请将 1.sh 替换为 A.sh 或 B.sh）
 ```shell
-vnstat ALL=(ALL) NOPASSWD: /etc/1.sh
+%sudo ALL=(ALL) NOPASSWD: /etc/1.sh
 ```
 6. **设置自动执行**  
 打开当前用户的自动任务编辑器
@@ -72,11 +79,12 @@ crontab -e
 ```
 在最后一行添加如下内容：
 ```shell
-*/5 * * * * /etc/1.sh
+# 每一分钟执行一次1.sh脚本
+* * * * * sudo /etc/1.sh
 ```
 
 ### 二、检验  
-为防止因设置无效而导致流量超额，建议先设置小额并进行超额测试  
+为防止因设置无效而导致流量超额，建议先设置小额限制并进行超额测试  
 在终端中按照顺序运行即可 
 ```shell
 # 1. 临时声明你的网卡变量
@@ -92,16 +100,27 @@ fi
 以本代码为例，在执行常规耗流任务如`sudo apt update`后，建议检查`/home/alert.log`中是否出现提示
 
 ### 三、恢复  
+`A方案` 由于禁用了本地网卡防止联网，一般都需要在本地用shell命令自行恢复  
+`[interface]`替换为你的网卡名
+```
+sudo ip link set [interface] up
+```
+或
+```
+sudo ifconfig [interface] up
+```
 `B方案`断网后由于还剩22端口供ssh连接，在重置流量额度后通过远程ssh运行如下命令，以**清空防火墙规则**
 ```bash
-# 1. 将防火墙默认策略改回允许
-sudo iptables -P INPUT ACCEPT
-sudo iptables -P OUTPUT ACCEPT
-sudo iptables -P FORWARD ACCEPT
-
-# 2. 清空所有的限制规则
-sudo iptables -F
+iptables -N TRAFFIC_LIMIT
+iptables -A OUTPUT -j TRAFFIC_LIMIT
 ```
+清空`vnstat`的数据库
+```
+sudo systemctl stop vnstat
+sudo vnstat --remove -i eth0
+sudo systemctl start vnstat
+```
+
 <p align="right">(<a href="#top">回到顶部</a>)</p>
 
 ---

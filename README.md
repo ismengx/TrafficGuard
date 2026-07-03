@@ -97,7 +97,7 @@ if [ $? -eq 1 ]; then
     echo "测试成功！日志已自动写入当前用户目录：/home/$USER/alert.log"
 fi
 ```
-以本代码为例，在执行常规耗流任务如`sudo apt update`后，建议检查`/home/alert.log`中是否出现提示
+以本代码为例，在执行常规耗流任务如`sudo apt update`后，检查`/home/[你的用户名]/alert.log`中是否出现提示
 
 ### 三、恢复  
 `A方案` 由于禁用了本地网卡防止联网，一般都需要在本地用shell命令自行恢复  

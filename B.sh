@@ -5,7 +5,7 @@ vnstat -i $INTERFACE --alert 0 3 month total 190 GB
 # 如果返回状态码 1，说明超标，执行
 if [ $? -eq 1 ]; then
     # 日志
-    echo "$(date):流量超标，正在通过 iptables 锁死流量并保留 22 端口..." >> /home/yushuai/vnstat_alert.log
+    echo "$(date):流量超标，正在通过 iptables 锁死流量并保留 22 端口..." >> /home/$USER/vnstat_alert.log
     # 1. 允许本地回环网卡（127.0.0.1）通信，保证系统内部组件不崩溃
     sudo /sbin/iptables -A INPUT -i lo -j ACCEPT
     sudo /sbin/iptables -A OUTPUT -o lo -j ACCEPT

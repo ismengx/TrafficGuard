@@ -93,8 +93,8 @@ INTERFACE="eth0"
 vnstat -i $INTERFACE --alert 0 3 month total 1 KB
 # 3. 如果上一条命令因为超额返回了错误码，则会触发以下打印和日志
 if [ $? -eq 1 ]; then
-    echo "$(date): 流量已超额" >> ~/alert.log
-    echo "流量已超额！测试成功！"
+    echo "$(date): 流量已超额" >> /home/$USER/alert.log
+    echo "测试成功！日志已自动写入当前用户目录：/home/$USER/alert.log"
 fi
 ```
 以本代码为例，在执行常规耗流任务如`sudo apt update`后，建议检查`/home/alert.log`中是否出现提示

@@ -4,9 +4,8 @@
   <a href="#-中文版本">中文</a>
 </p>
 
-
-[![Bilibili](https://zshuai.cc.cd/c19031ffb6bbb1675b8523f8f3e39eb9.png)](https://www.bilibili.com/video/BV12gTb6CEBD/)
-
+<img src="https://pub-7e5b8ad9a5864c57932040aa1e7b0318.r2.dev/vnstat-%E8%A7%86%E9%A2%91%E6%95%99%E7%A8%8B.png" width="500" alt="视频演示">  
+<img src="https://pub-7e5b8ad9a5864c57932040aa1e7b0318.r2.dev/vnstat-%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="500" alt="运行流程">
 
 ## 中文版
 本项目基于原版<a href="https://github.com/vergoh/vnstat">vnstat (2.9-1)</a>alert机制而开发，通过sh脚本与定时任务以监控云服务器的流量以免产生不必要的资费，感谢原作者的开源贡献！  

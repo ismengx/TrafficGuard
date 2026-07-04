@@ -4,7 +4,8 @@
   <a href="#-中文版本">中文</a>
 </p>
 
-<img src="https://pub-7e5b8ad9a5864c57932040aa1e7b0318.r2.dev/vnstat-%E8%A7%86%E9%A2%91%E6%95%99%E7%A8%8B.png" width="500" alt="视频演示">  
+[<img src="https://pub-7e5b8ad9a5864c57932040aa1e7b0318.r2.dev/vnstat-%E8%A7%86%E9%A2%91%E6%95%99%E7%A8%8B.png" width="500" alt="视频演示">](https://www.bilibili.com/video/BV12gTb6CEBD/?share_source=copy_web&vd_source=2c1b85a0f5431bc583942685c9b707ab)  
+
 <img src="https://pub-7e5b8ad9a5864c57932040aa1e7b0318.r2.dev/vnstat-%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="500" alt="运行流程">
 
 ## 中文版
